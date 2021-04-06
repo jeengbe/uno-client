@@ -1,10 +1,13 @@
-import { Component } from "react";
+import classNames from "classnames";
+import React, { Component } from "react";
 import { Card } from "./Card";
 
 import "./Cards.scss";
 
 export interface Props {
   cards: number[];
+  inline?: boolean;
+  overlap?: boolean;
 }
 
 export interface State {}
@@ -12,12 +15,10 @@ export interface State {}
 export class Cards extends Component<Props, State> {
   render(): JSX.Element {
     return (
-      <div style={{ display: "flex", justifyContent: "center", margin: "40px" }}>
-        <div className="cards" style={{ width: `${this.props.cards.length * 100 + 110}px` }}>
-          {this.props.cards.map(card => (
-            <Card card={card} />
-          ))}
-        </div>
+      <div className={classNames({ cards: true, overlap: this.props.overlap })} style={{ width: this.props.overlap === true ? 50 / this.props.cards.length + 50 + "%" : undefined }}>
+        {this.props.cards.map((card, i) => (
+          <Card key={i} card={card} inline={this.props.inline} />
+        ))}
       </div>
     );
   }

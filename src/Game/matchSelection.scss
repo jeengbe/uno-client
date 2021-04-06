@@ -1,0 +1,27 @@
+.matchSelection {
+  text-align: center;
+  .matchPreview {
+    display: inline-block;
+    margin: 40px;
+    padding: 30px;
+    box-shadow: 0 0 1em rgba(128, 128, 128, 0.08);
+    background-color: rgba(66, 66, 66);
+    border-radius: 2px;
+    position: relative;
+
+    .cards {
+      height: 100px;
+    }
+
+    .name {
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+    .id {
+      position: absolute;
+      right: 4px;
+      bottom: 2px;
+      opacity: 0.7;
+    }
+  }
+}

@@ -1,21 +1,33 @@
-@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap");
 
 html,
 body {
   margin: 0;
-  font-family: "Open Sans", "Comic Sans", Arial, Helvetica, sans-serif;
+  font-family: "Poppins", "Comic Sans", Arial, Helvetica, sans-serif;
 }
 
 body {
-  background-color: #212121;
-  color: #fff;
+  background-color: rgba(24, 24, 24, 1);
+  color: rgba(252, 248, 227, 1);
 }
 
 * {
   box-sizing: border-box;
 }
 
-.app {
+:root {
+  --red: #c34824;
+  --green: #7fb814;
+  --blue: #1559b1;
+  --yellow: #dac508;
+  --on-red: rgba(252, 248, 227, 1);
+  --on-green: rgba(252, 248, 227, 1);
+  --on-blue: rgba(252, 248, 227, 1);
+  --on-yellow: rgba(252, 248, 227, 1);
+  --card-bg: #121212;
+}
+
+#app {
   .status {
     text-align: center;
   }
