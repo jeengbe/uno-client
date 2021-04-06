@@ -24,7 +24,7 @@ export default class App extends Component<Props, State> {
     this.game = new Game("Jesper");
   }
 
-  async componentDidMount() {
+  async componentDidMount(): Promise<void> {
     this.setState({
       state: "SOCKET_CONNECT",
     });
@@ -33,7 +33,7 @@ export default class App extends Component<Props, State> {
     try {
       await this.game.connect();
     } catch (err) {
-      return this.setState({
+      return void this.setState({
         state: "SOCKET_ERROR",
       });
     }
@@ -45,7 +45,7 @@ export default class App extends Component<Props, State> {
     try {
       await this.game.auth();
     } catch (err) {
-      return this.setState({
+      return void this.setState({
         state: "SOCKET_AUTH_ERROR",
       });
     }
@@ -54,11 +54,11 @@ export default class App extends Component<Props, State> {
     });
   }
 
-  componentWillUnmount() {
+  componentWillUnmount(): void {
     this.game.disconnect();
   }
 
-  render() {
+  render(): JSX.Element {
     return (
       <div className="app">
         {

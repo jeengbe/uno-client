@@ -10,10 +10,10 @@ export interface Props {
 export interface State {}
 
 export class Cards extends Component<Props, State> {
-  render() {
+  render(): JSX.Element {
     return (
       <div style={{ display: "flex", justifyContent: "center", margin: "40px" }}>
-        <div className="cards" style={{ width: this.props.cards.length * 100 + 110 + "px" }}>
+        <div className="cards" style={{ width: `${this.props.cards.length * 100 + 110}px` }}>
           {this.props.cards.map(card => (
             <Card card={card} />
           ))}
