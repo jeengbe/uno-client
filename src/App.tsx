@@ -1,26 +1,76 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Component } from "react";
+import { Hand } from "./Game/Hand";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import "./App.scss";
+import { Game } from "./Game/Game";
+
+interface Props {}
+
+interface State {
+  state: "SOCKET_CONNECT" | "SOCKET_AUTH" | "SOCKET_AUTH_ERROR" | "SOCKET_SUCCESS" | "SOCKET_ERROR";
 }
 
-export default App;
+export default class App extends Component<Props, State> {
+  private readonly game: Game;
+
+  constructor(props: Props) {
+    super(props);
+    console.clear();
+
+    this.state = {
+      state: "SOCKET_CONNECT",
+    };
+
+    this.game = new Game("Jesper");
+  }
+
+  async componentDidMount() {
+    this.setState({
+      state: "SOCKET_CONNECT",
+    });
+
+    // Init connection
+    try {
+      await this.game.connect();
+    } catch (err) {
+      return this.setState({
+        state: "SOCKET_ERROR",
+      });
+    }
+    this.setState({
+      state: "SOCKET_AUTH",
+    });
+
+    // Login
+    try {
+      await this.game.auth();
+    } catch (err) {
+      return this.setState({
+        state: "SOCKET_AUTH_ERROR",
+      });
+    }
+    this.setState({
+      state: "SOCKET_SUCCESS",
+    });
+  }
+
+  componentWillUnmount() {
+    this.game.disconnect();
+  }
+
+  render() {
+    return (
+      <div className="app">
+        {
+          {
+            SOCKET_ERROR: <h1 className="status error">Unknown error</h1>,
+            SOCKET_CONNECT: <h1 className="status">Connecting</h1>,
+            SOCKET_AUTH: <h1 className="status">Logging in</h1>,
+            SOCKET_AUTH_ERROR: <h1 className="status error">Error logging in</h1>,
+            SOCKET_SUCCESS: <Hand cards={[]} />,
+          }[this.state.state]
+        }
+      </div>
+    );
+  }
+}
