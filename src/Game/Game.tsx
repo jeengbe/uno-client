@@ -1,3 +1,4 @@
+import App from "../App";
 import { CONFIG } from "../Config";
 
 export class Game {
@@ -6,6 +7,8 @@ export class Game {
   private socket: WebSocket | null = null;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private onMessage: ((data: Record<string, any>) => void) | null = null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private eventHandlers: Map<(Protocol.ServerToClient & { method: "EVENT" })["event"], (data: Record<string, any>) => void>;
 
   /**
    * Initialise a new game
@@ -16,6 +19,7 @@ export class Game {
   constructor(match: string | null, username: string) {
     this.match = match;
     this.username = username;
+    this.eventHandlers = new Map();
   }
 
   /**
@@ -33,8 +37,17 @@ export class Game {
           const message = JSON.parse(e.data.toString());
           console.log("Message received: ");
           console.dir(message, { depth: null });
+          if (!("method" in message)) throw new Error("Missing key 'method'");
+          if (typeof message.method !== "string") throw new Error("Invalid 'method' type");
+          const method = message.method;
+
           this.onMessage === null || this.onMessage(message);
           this.onMessage = null;
+          if (method === "EVENT") {
+            if (!("event" in message)) throw new Error("Missing key 'event'");
+            const event = message.event;
+            if (this.eventHandlers.has(event)) this.eventHandlers.get(event)!(message.data || {});
+          }
         } catch (err) {
           this.disconnect();
         }
@@ -103,6 +116,7 @@ export class Game {
       });
 
       this.onMessage = message => {
+        if (message.method !== "LIST_MATCHES") throw new Error("Wrong method");
         if (!("data" in message)) throw new Error("Missing key 'data'");
         const data = message.data;
         if (!("matches" in data)) throw new Error("Missing key 'data.matches'");
@@ -124,26 +138,59 @@ export class Game {
         },
       });
 
-      this.onMessage = () => resolve();
+      this.onMessage = message => {
+        if (message.method !== "JOIN_MATCH") throw new Error("Wrong method");
+        resolve();
+      };
     });
   }
 
   /**
    * Load data of the currently playing match
    */
-  public loadCurrentMatchData(): Promise<MatchDataMatch> {
-    return new Promise<MatchDataMatch>(resolve => {
+  public loadCurrentMatchData(): Promise<MatchDataWaiting> {
+    return new Promise<MatchDataWaiting>(resolve => {
       this.send({
         method: "LOAD_MATCH_DATA",
       });
 
       this.onMessage = message => {
+        if (message.method !== "LOAD_MATCH_DATA") throw new Error("Wrong method");
         if (!("data" in message)) throw new Error("Missing key 'data'");
         const data = message.data;
         if (!("match" in data)) throw new Error("Missing key 'data.match'");
 
         resolve(data.match);
       };
+    });
+  }
+
+  /**
+   * Start the match
+   */
+  public startMatch(): Promise<void> {
+    return new Promise<void>(resolve => {
+      this.send({
+        method: "START_MATCH",
+      });
+
+      this.onMessage = message => {
+        if (message.method !== "START_MATCH") throw new Error("Wrong method");
+
+        resolve();
+      };
+    });
+  }
+
+  /**
+   * Attach event handlers for a running game
+   */
+  public readyForGame(app: App): void {
+    this.eventHandlers.set("START_MATCH", data => {
+      if (!("topCard" in data)) throw new Error("Missing key 'data.topCard'");
+      if (!("cards" in data)) throw new Error("Missing key 'data.cards'");
+
+      app.startMatch({ topCard: data.topCard, cards: data.cards });
     });
   }
 }

@@ -3,6 +3,7 @@ import React, { Component } from "react";
 import "./App.scss";
 import { Game } from "./game/Game";
 import { Match } from "./game/Match";
+import { MatchLobby } from "./game/MatchLobby";
 import { MatchSelection } from "./game/MatchSelection";
 
 interface Props {}
@@ -20,7 +21,10 @@ export interface State {
     | "MATCHES_SELECT" // Awaiting match selection
     // Actual game
     | "MATCH_JOINING" // Joining a match
-    | "MATCH_LOADING"; // Loading match data after join
+    | "MATCH_LOADING" // Loading match data after join
+    | "MATCH_WAITING" // Waiting for the match to start
+    | "MATCH_ONGOING"; // Currently in a match
+
   matches: MatchDataPublic[];
   currentMatch: Match | null;
 }
@@ -91,7 +95,6 @@ export default class App extends Component<Props, State> {
       });
     }
 
-
     // TODO: Remove
     this.joinMatch(1);
   }
@@ -108,7 +111,28 @@ export default class App extends Component<Props, State> {
       state: "MATCH_LOADING",
     });
     this.setState({
+      state: "MATCH_WAITING",
       currentMatch: new Match(await this.game.loadCurrentMatchData()),
+    });
+
+    this.game.readyForGame(this);
+  }
+
+  /**
+   * Start the current match (Send signal to server)
+   */
+  public async triggerStartMatch(): Promise<void> {
+    await this.game.startMatch();
+  }
+
+  /**
+   * Start the current match
+   */
+  public startMatch(data: { topCard: number; cards: number[] }): void {
+    this.state.currentMatch!.topCard = data.topCard;
+    this.state.currentMatch!.cards = data.cards;
+    this.setState({
+      state: "MATCH_ONGOING",
     });
   }
 
@@ -127,6 +151,8 @@ export default class App extends Component<Props, State> {
       MATCHES_SELECT: <MatchSelection joinMatch={this.joinMatch.bind(this)} matches={this.state.matches} />,
       MATCH_JOINING: <h1 className="status">Joining match</h1>,
       MATCH_LOADING: <h1 className="status">Loading match data</h1>,
+      MATCH_WAITING: <MatchLobby startMatch={this.triggerStartMatch.bind(this)} match={this.state.currentMatch!} />,
+      MATCH_ONGOING: <MatchOngoing match={this.state.currentMatch} />,
     }[this.state.state];
   }
 }
