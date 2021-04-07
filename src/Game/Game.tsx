@@ -115,7 +115,7 @@ export class Game {
   /**
    * Join a match
    */
-  public joinMatch(matchID: string): Promise<void> {
+  public joinMatch(matchID: number): Promise<void> {
     return new Promise<void>(resolve => {
       this.send({
         method: "JOIN_MATCH",

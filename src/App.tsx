@@ -90,12 +90,16 @@ export default class App extends Component<Props, State> {
         state: "SOCKET_ERROR",
       });
     }
+
+
+    // TODO: Remove
+    this.joinMatch(1);
   }
 
   /**
    * Join a match
    */
-  public async joinMatch(matchID: string): Promise<void> {
+  public async joinMatch(matchID: number): Promise<void> {
     this.setState({
       state: "MATCH_JOINING",
     });
@@ -114,7 +118,7 @@ export default class App extends Component<Props, State> {
 
   render(): JSX.Element {
     return {
-      SOCKET_ERROR: <h1 className="status error">Unknown error</h1>,
+      SOCKET_ERROR: <h1 className="status error">Server error</h1>,
       SOCKET_CONNECTING: <h1 className="status">Connecting</h1>,
       SOCKET_AUTH: <h1 className="status">Logging in</h1>,
       SOCKET_AUTH_ERROR: <h1 className="status error">Error logging in</h1>,

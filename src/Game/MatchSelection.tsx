@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import "./matchSelection.scss";
 
 export interface Props {
-  joinMatch: (matchID: string) => void;
+  joinMatch: (matchID: number) => void;
   matches: MatchDataPublic[];
 }
 

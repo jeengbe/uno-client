@@ -1,5 +1,5 @@
 export class Match {
-  public readonly ID: string;
+  public readonly ID: number;
   public readonly name: string;
 
   constructor(data: MatchDataMatch) {
