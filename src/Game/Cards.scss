@@ -15,7 +15,6 @@ $height: $width * (88.9 / 56);
         }
       }
 
-      margin: 0 5px;
 
       .card {
         transition: transform 0.1s linear;
@@ -34,6 +33,7 @@ $height: $width * (88.9 / 56);
   user-select: none;
   display: inline-block;
   cursor: pointer;
+  margin: 0 5px;
 
   .card {
     height: 100%;

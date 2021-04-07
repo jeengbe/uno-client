@@ -46,6 +46,7 @@ export class Game {
           if (method === "EVENT") {
             if (!("event" in message)) throw new Error("Missing key 'event'");
             const event = message.event;
+
             if (this.eventHandlers.has(event)) this.eventHandlers.get(event)!(message.data || {});
           }
         } catch (err) {
@@ -186,6 +187,25 @@ export class Game {
    * Attach event handlers for a running game
    */
   public readyForGame(app: App): void {
+    this.eventHandlers.set("PROMOTE", () => {
+      app.state.currentMatch!.isMaster = true;
+      app.forceUpdate();
+    });
+
+    this.eventHandlers.set("ADD_PLAYER", data => {
+      if (!("player" in data)) throw new Error("Missing key 'data.player'");
+
+      app.state.currentMatch!.addPlayer(data.player);
+      app.forceUpdate();
+    });
+
+    this.eventHandlers.set("REMOVE_PLAYER", data => {
+      if (!("playerID" in data)) throw new Error("Missing key 'data.playerID'");
+
+      app.state.currentMatch!.removePlayer(data.playerID);
+      app.forceUpdate();
+    });
+
     this.eventHandlers.set("START_MATCH", data => {
       if (!("topCard" in data)) throw new Error("Missing key 'data.topCard'");
       if (!("cards" in data)) throw new Error("Missing key 'data.cards'");

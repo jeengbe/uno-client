@@ -16,8 +16,8 @@ export interface Props {
    * - 1010 (10): +2
    * - 1001 (11): No U
    * - 1010 (12): Skip
-   * - 1011 (13): +4
-   * - 1100 (14): Change Color
+   * - 1011 (13): Change Color
+   * - 1100 (14): +4
    */
   card: number;
   inline?: boolean;
@@ -142,14 +142,14 @@ const getCornerTop = (value: number) => {
       return <g transform={`translate(${cornerMargin}, ${cornerMargin})`}>{noU(10, 10, 45, 8, 6)}</g>;
     case 12: // Skip
       return <g transform={`translate(${cornerMargin}, ${cornerMargin})`}>{skip(radiusCorner, 10)}</g>;
-    case 13: // +4
+    case 13: // Change Color
+      return <g transform={`translate(${cornerMargin}, ${cornerMargin})`}>{changeColor(radiusCorner, 10, 10)}</g>;
+    case 14: // +4
       return (
         <text textAnchor="middle" dominantBaseline="mathematical" fontSize="100" fill="var(--on-red)" transform={`translate(${cornerMargin}, ${cornerMargin})`}>
           +4
         </text>
       );
-    case 14: // Change Color
-      return <g transform={`translate(${cornerMargin}, ${cornerMargin})`}>{changeColor(radiusCorner, 10, 10)}</g>;
     default:
       throw new Error("Unknown card value: " + value);
   }
@@ -180,14 +180,14 @@ const getCornerBottom = (value: number) => {
       return <g transform={`translate(${width - cornerMargin}, ${height - cornerMargin}) rotate(180)`}>{noU(10, 10, 45, 8, 6)}</g>;
     case 12: // Skip
       return <g transform={`translate(${width - cornerMargin}, ${height - cornerMargin}) rotate(180)`}>{skip(radiusCorner, 10)}</g>;
-    case 13: // +4
+    case 13: // Change Color
+      return <g transform={`translate(${width - cornerMargin}, ${height - cornerMargin}) rotate(180)`}>{changeColor(radiusCorner, 10, 10)}</g>;
+    case 14: // +4
       return (
         <text textAnchor="middle" dominantBaseline="mathematical" fontSize="100" fill="var(--on-red)" transform={`translate(${width - cornerMargin}, ${height - cornerMargin}) rotate(180)`}>
           +4
         </text>
       );
-    case 14: // Change Color
-      return <g transform={`translate(${width - cornerMargin}, ${height - cornerMargin}) rotate(180)`}>{changeColor(radiusCorner, 10, 10)}</g>;
     default:
       throw new Error("Unknown card value: " + value);
   }
@@ -214,10 +214,10 @@ const getMiddle = (value: number) => {
       return <g transform={`translate(${width / 2},${height / 2})`}>{noU(25, 20, 125, 26, 13)}</g>;
     case 12: // Skip
       return <g transform={`translate(${width / 2},${height / 2})`}>{skip(radius, 13)}</g>;
-    case 13: // +4
-      return <g transform={`translate(${width / 2},${height / 2})`}>{plusFour(height / 10, width / 10, 10, 6, 10)}</g>;
-    case 14: // Change Color
+    case 13: // Change Color
       return <g transform={`translate(${width / 2},${height / 2})`}>{changeColor(radius, 13, 18)}</g>;
+    case 14: // +4
+      return <g transform={`translate(${width / 2},${height / 2})`}>{plusFour(height / 10, width / 10, 10, 6, 10)}</g>;
     default:
       throw new Error("Unknown card value: " + value);
   }

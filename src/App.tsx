@@ -4,6 +4,7 @@ import "./App.scss";
 import { Game } from "./game/Game";
 import { Match } from "./game/Match";
 import { MatchLobby } from "./game/MatchLobby";
+import { MatchOngoing } from "./game/MatchOngoing";
 import { MatchSelection } from "./game/MatchSelection";
 
 interface Props {}
@@ -42,7 +43,7 @@ export default class App extends Component<Props, State> {
       currentMatch: null,
     };
 
-    this.game = new Game("game1", "Jesper");
+    this.game = new Game("game1", window.location.hash || "Jesper");
   }
 
   async componentDidMount(): Promise<void> {
@@ -95,8 +96,8 @@ export default class App extends Component<Props, State> {
       });
     }
 
-    // TODO: Remove
-    this.joinMatch(1);
+    // // TODO: Remove
+    // this.joinMatch(1);
   }
 
   /**
@@ -112,28 +113,28 @@ export default class App extends Component<Props, State> {
     });
     this.setState({
       state: "MATCH_WAITING",
-      currentMatch: new Match(await this.game.loadCurrentMatchData()),
+      currentMatch: new Match(this, await this.game.loadCurrentMatchData()),
     });
 
     this.game.readyForGame(this);
   }
 
   /**
-   * Start the current match (Send signal to server)
-   */
-  public async triggerStartMatch(): Promise<void> {
-    await this.game.startMatch();
-  }
-
-  /**
    * Start the current match
    */
   public startMatch(data: { topCard: number; cards: number[] }): void {
-    this.state.currentMatch!.topCard = data.topCard;
-    this.state.currentMatch!.cards = data.cards;
+    const { topCard, cards } = data;
+
+    this.state.currentMatch!.topCard = topCard;
+    this.state.currentMatch!.cards = cards;
+
     this.setState({
       state: "MATCH_ONGOING",
     });
+  }
+
+  public leave(): void {
+    this.loadMatches();
   }
 
   componentWillUnmount(): void {
@@ -151,8 +152,8 @@ export default class App extends Component<Props, State> {
       MATCHES_SELECT: <MatchSelection joinMatch={this.joinMatch.bind(this)} matches={this.state.matches} />,
       MATCH_JOINING: <h1 className="status">Joining match</h1>,
       MATCH_LOADING: <h1 className="status">Loading match data</h1>,
-      MATCH_WAITING: <MatchLobby startMatch={this.triggerStartMatch.bind(this)} match={this.state.currentMatch!} />,
-      MATCH_ONGOING: <MatchOngoing match={this.state.currentMatch} />,
+      MATCH_WAITING: <MatchLobby game={this.game} match={this.state.currentMatch!} />,
+      MATCH_ONGOING: <MatchOngoing game={this.game} match={this.state.currentMatch!} />,
     }[this.state.state];
   }
 }
