@@ -19,7 +19,7 @@ $height: $width * (88.9 / 56);
 
       &:hover .card,
       & .card:hover {
-        transform: translateX(20px) translateY(-20px) rotate(3deg);
+        transform: translateX(20px) translateY(-20px) rotate(3deg) !important;
       }
     }
   }
@@ -34,25 +34,20 @@ $height: $width * (88.9 / 56);
   .card {
     height: 100%;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.25);
-
-    .background {
-    }
+    border-radius: 3.5%;
 
     @each $color in "red", "green", "blue", "yellow" {
       &.#{$color} {
-        color: var(--on-#{$color});
-        .background {
-          fill: var(--#{$color});
-        }
+        --card-bg: var(--#{$color});
+        --color: var(--on-#{$color});
       }
     }
 
     &.dark {
-      & + .cardContainer .card .background {
+      --card-bg: var(--dark-bg);
+
+      & + .cardContainer .card {
         box-shadow: 0 0 20px rgba(128, 128, 128, 0.05);
-      }
-      .background {
-        fill: var(--card-bg);
       }
     }
   }

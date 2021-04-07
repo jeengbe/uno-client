@@ -19,6 +19,7 @@
     "quotes": ["error", "double"],
     "semi": ["error", "always"],
     "@typescript-eslint/no-empty-interface": ["off"],
+    "@typescript-eslint/ban-ts-comment": ["off"],
     "react/react-in-jsx-scope": ["off"],
     "no-case-declarations": ["off"]
   }
