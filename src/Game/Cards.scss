@@ -5,21 +5,25 @@ $height: $width * (88.9 / 56);
   white-space: nowrap;
   height: 100%;
   display: inline-block;
+  contain: layout;
 
   &.overlap {
     .cardContainer {
       @for $i from 0 through 20 {
         &:nth-child(#{$i + 1}) {
-          transform: translateX($i * -50%);
+          // transform: translateX($i * -50%);
         }
       }
+
+      margin: 0 5px;
+
       .card {
         transition: transform 0.1s linear;
       }
 
       &:hover .card,
       & .card:hover {
-        transform: translateX(20px) translateY(-20px) rotate(3deg) !important;
+        transform: translateX(10px) translateY(-14px) rotate(3deg) !important;
       }
     }
   }
@@ -45,10 +49,6 @@ $height: $width * (88.9 / 56);
 
     &.dark {
       --card-bg: var(--dark-bg);
-
-      & + .cardContainer .card {
-        box-shadow: 0 0 20px rgba(128, 128, 128, 0.05);
-      }
     }
   }
 }

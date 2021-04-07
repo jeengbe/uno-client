@@ -279,3 +279,8 @@ const changeColor = (radius: number, strokeWidth: number, gap: number) => (
     <path strokeWidth={gap} stroke="var(--card-bg)" fill="none" d={`M 0,${radius + strokeWidth / 2 + radius / 20} l 0,-${strokeWidth + radius / 10}`} />
   </>
 );
+
+/**
+ * Generate a random card number
+ */
+export const random = (): number => (Math.floor(Math.random() * 4) << 4) | Math.floor(Math.random() * 15);

@@ -15,7 +15,7 @@ export interface State {}
 export class Cards extends Component<Props, State> {
   render(): JSX.Element {
     return (
-      <div className={classNames({ cards: true, overlap: this.props.overlap })} style={{ width: this.props.overlap === true ? 50 / this.props.cards.length + 50 + "%" : undefined }}>
+      <div className={classNames({ cards: true, overlap: this.props.overlap })}>
         {this.props.cards.map((card, i) => (
           <Card key={i} card={card} inline={this.props.inline} />
         ))}

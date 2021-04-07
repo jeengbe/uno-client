@@ -1,7 +1,9 @@
 .matchSelection {
   text-align: center;
+
   .matchPreview {
     display: inline-block;
+    cursor: pointer;
     margin: 40px;
     padding: 30px;
     box-shadow: 0 0 1em rgba(128, 128, 128, 0.08);
@@ -10,7 +12,7 @@
     position: relative;
 
     .cards {
-      height: 100px;
+      height: 5rem;
     }
 
     .name {
