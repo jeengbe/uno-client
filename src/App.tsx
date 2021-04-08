@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 
 import "./App.scss";
-import { Game } from "./game-smol/Game";
-import { Match } from "./game-smol/Match";
-import { MatchLobby } from "./game-smol/MatchLobby";
-import { MatchOngoing } from "./game-smol/MatchOngoing";
-import { MatchSelection } from "./game-smol/MatchSelection";
+import { Game } from "./game/Game";
+import { Match } from "./game/Match";
+import { MatchLobby } from "./game/MatchLobby";
+import { MatchOngoing } from "./game/MatchOngoing";
+import { MatchSelection } from "./game/MatchSelection";
 
 interface Props {}
 
