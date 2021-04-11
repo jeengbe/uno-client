@@ -3,7 +3,7 @@ declare type MatchDataPublic = {
   name: string;
 };
 
-declare type MatchDataWaiting = {
+declare type MatchDataMatch = {
   ID: number;
   name: string;
   players: PlayerData[];
@@ -52,11 +52,12 @@ declare namespace Protocol {
     event: "ADD_PLAYER",
     data: {
       player: PlayerData;
+      playerNumber: number;
     };
   } | {
     event: "REMOVE_PLAYER",
     data: {
-      playerID: number;
+      playerNumber: number;
     };
   } | {
     event: "START_MATCH",
@@ -120,7 +121,7 @@ declare namespace Protocol {
        */
       method: "LOAD_MATCH_DATA";
       data: {
-        match: MatchDataWaiting;
+        match: MatchDataMatch;
       };
     } | {
       /**

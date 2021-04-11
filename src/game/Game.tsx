@@ -149,8 +149,8 @@ export class Game {
   /**
    * Load data of the currently playing match
    */
-  public loadCurrentMatchData(): Promise<MatchDataWaiting> {
-    return new Promise<MatchDataWaiting>(resolve => {
+  public loadCurrentMatchData(): Promise<MatchDataMatch> {
+    return new Promise<MatchDataMatch>(resolve => {
       this.send({
         method: "LOAD_MATCH_DATA",
       });

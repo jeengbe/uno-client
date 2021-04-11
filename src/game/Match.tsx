@@ -11,7 +11,7 @@ export class Match {
 
   public players: PlayerData[];
 
-  constructor(app: App, data: MatchDataWaiting) {
+  constructor(app: App, data: MatchDataMatch) {
     this.app = app;
     this.ID = data.ID;
     this.name = data.name;
