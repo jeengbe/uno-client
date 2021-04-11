@@ -125,7 +125,7 @@ const getCornerTop = (value: number) => {
 
   if (value < 10) {
     return (
-      <text textAnchor="middle" dominantBaseline="mathematical" fontSize="100" fill="var(--on-red)" transform={`translate(${cornerMargin}, ${cornerMargin})`}>
+      <text textAnchor="middle" dominantBaseline="mathematical" fontSize="100" fill="var(--on-card-bg)" transform={`translate(${cornerMargin}, ${cornerMargin})`}>
         {value}
       </text>
     );
@@ -134,19 +134,27 @@ const getCornerTop = (value: number) => {
   switch (value) {
     case 10: // +2
       return (
-        <text textAnchor="middle" dominantBaseline="mathematical" fontSize="100" fill="var(--on-red)" transform={`translate(${cornerMargin}, ${cornerMargin})`}>
+        <text textAnchor="middle" dominantBaseline="mathematical" fontSize="100" fill="var(--on-card-bg)" transform={`translate(${cornerMargin}, ${cornerMargin})`}>
           +2
         </text>
       );
     case 11: // No U
-      return <g transform={`translate(${cornerMargin}, ${cornerMargin})`}>{noU(10, 10, 45, 8, 6)}</g>;
+      return (
+        <g stroke="var(--on-card-bg)" transform={`translate(${cornerMargin}, ${cornerMargin})`}>
+          {noU(10, 10, 45, 8, 6)}
+        </g>
+      );
     case 12: // Skip
-      return <g transform={`translate(${cornerMargin}, ${cornerMargin})`}>{skip(radiusCorner, 10)}</g>;
+      return (
+        <g stroke="var(--on-card-bg)" transform={`translate(${cornerMargin}, ${cornerMargin})`}>
+          {skip(radiusCorner, 9)}
+        </g>
+      );
     case 13: // Change Color
       return <g transform={`translate(${cornerMargin}, ${cornerMargin})`}>{changeColor(radiusCorner, 10, 10)}</g>;
     case 14: // +4
       return (
-        <text textAnchor="middle" dominantBaseline="mathematical" fontSize="100" fill="var(--on-red)" transform={`translate(${cornerMargin}, ${cornerMargin})`}>
+        <text textAnchor="middle" dominantBaseline="mathematical" fontSize="100" fill="var(--on-card-bg)" transform={`translate(${cornerMargin}, ${cornerMargin})`}>
           +4
         </text>
       );
@@ -163,7 +171,7 @@ const getCornerBottom = (value: number) => {
 
   if (value < 10) {
     return (
-      <text textAnchor="middle" dominantBaseline="mathematical" fontSize="100" fill="var(--on-red)" transform={`translate(${width - cornerMargin}, ${height - cornerMargin}) rotate(180)`}>
+      <text textAnchor="middle" dominantBaseline="mathematical" fontSize="100" fill="var(--on-card-bg)" transform={`translate(${width - cornerMargin}, ${height - cornerMargin}) rotate(180)`}>
         {value}
       </text>
     );
@@ -172,19 +180,27 @@ const getCornerBottom = (value: number) => {
   switch (value) {
     case 10: // +2
       return (
-        <text textAnchor="middle" dominantBaseline="mathematical" fontSize="100" fill="var(--on-red)" transform={`translate(${width - cornerMargin}, ${height - cornerMargin}) rotate(180)`}>
+        <text textAnchor="middle" dominantBaseline="mathematical" fontSize="100" fill="var(--on-card-bg)" transform={`translate(${width - cornerMargin}, ${height - cornerMargin}) rotate(180)`}>
           +2
         </text>
       );
     case 11: // No U
-      return <g transform={`translate(${width - cornerMargin}, ${height - cornerMargin}) rotate(180)`}>{noU(10, 10, 45, 8, 6)}</g>;
+      return (
+        <g stroke="var(--on-card-bg)" transform={`translate(${width - cornerMargin}, ${height - cornerMargin}) rotate(180)`}>
+          {noU(10, 10, 45, 8, 6)}
+        </g>
+      );
     case 12: // Skip
-      return <g transform={`translate(${width - cornerMargin}, ${height - cornerMargin}) rotate(180)`}>{skip(radiusCorner, 10)}</g>;
+      return (
+        <g stroke="var(--on-card-bg)" transform={`translate(${width - cornerMargin}, ${height - cornerMargin}) rotate(180)`}>
+          {skip(radiusCorner, 9)}
+        </g>
+      );
     case 13: // Change Color
       return <g transform={`translate(${width - cornerMargin}, ${height - cornerMargin}) rotate(180)`}>{changeColor(radiusCorner, 10, 10)}</g>;
     case 14: // +4
       return (
-        <text textAnchor="middle" dominantBaseline="mathematical" fontSize="100" fill="var(--on-red)" transform={`translate(${width - cornerMargin}, ${height - cornerMargin}) rotate(180)`}>
+        <text textAnchor="middle" dominantBaseline="mathematical" fontSize="100" fill="var(--on-card-bg)" transform={`translate(${width - cornerMargin}, ${height - cornerMargin}) rotate(180)`}>
           +4
         </text>
       );
@@ -209,11 +225,23 @@ const getMiddle = (value: number) => {
   }
   switch (value) {
     case 10: // +2
-      return <g transform={`translate(${width / 2},${height / 2})`}>{plusTwo(height / 10, width / 10, 10, 6, 10)}</g>;
+      return (
+        <g stroke="var(--color)" transform={`translate(${width / 2},${height / 2})`}>
+          {plusTwo(height / 7, width / 7, 10, 8, 10)}
+        </g>
+      );
     case 11: // No U
-      return <g transform={`translate(${width / 2},${height / 2})`}>{noU(25, 20, 125, 26, 13)}</g>;
+      return (
+        <g stroke="var(--color)" transform={`translate(${width / 2},${height / 2})`}>
+          {noU(25, 20, 125, 26, 13)}
+        </g>
+      );
     case 12: // Skip
-      return <g transform={`translate(${width / 2},${height / 2})`}>{skip(radius, 13)}</g>;
+      return (
+        <g stroke="var(--color)" transform={`translate(${width / 2},${height / 2})`}>
+          {skip(radius, 13)}
+        </g>
+      );
     case 13: // Change Color
       return <g transform={`translate(${width / 2},${height / 2})`}>{changeColor(radius, 13, 18)}</g>;
     case 14: // +4
@@ -234,23 +262,23 @@ const noU = (shortLength: number, radius: number, longLength: number, tipLength:
 
 const noUArrow = (x: number, y: number, shortLength: number, radius: number, longLength: number, tipLength: number, strokeWidth: number, angle: number) => (
   <>
-    <path strokeWidth={strokeWidth} stroke="var(--color)" fill="none" strokeLinecap="round" d={`M ${x},${y} l ${shortLength * Math.cos(angle)},${shortLength * Math.sin(angle)} a ${radius},${radius} 0 0,1 ${radius * Math.SQRT2 * Math.cos(angle + Math.PI / 4)},${radius * Math.SQRT2 * Math.sin(angle + Math.PI / 4)} l ${-longLength * Math.sin(angle)},${longLength * Math.cos(angle)} m 0,0 l ${tipLength * Math.SQRT2 * Math.cos(angle - (3 * Math.PI) / 4)},${tipLength * Math.SQRT2 * Math.sin(angle - (3 * Math.PI) / 4)} m ${-tipLength * Math.SQRT2 * Math.cos(angle - (3 * Math.PI) / 4)},${-tipLength * Math.SQRT2 * Math.sin(angle - (3 * Math.PI) / 4)} l ${tipLength * Math.SQRT2 * Math.cos(angle - Math.PI / 4)},${tipLength * Math.SQRT2 * Math.sin(angle - Math.PI / 4)}`} />
+    <path strokeWidth={strokeWidth} fill="none" strokeLinecap="round" d={`M ${x},${y} l ${shortLength * Math.cos(angle)},${shortLength * Math.sin(angle)} a ${radius},${radius} 0 0,1 ${radius * Math.SQRT2 * Math.cos(angle + Math.PI / 4)},${radius * Math.SQRT2 * Math.sin(angle + Math.PI / 4)} l ${-longLength * Math.sin(angle)},${longLength * Math.cos(angle)} m 0,0 l ${tipLength * Math.SQRT2 * Math.cos(angle - (3 * Math.PI) / 4)},${tipLength * Math.SQRT2 * Math.sin(angle - (3 * Math.PI) / 4)} m ${-tipLength * Math.SQRT2 * Math.cos(angle - (3 * Math.PI) / 4)},${-tipLength * Math.SQRT2 * Math.sin(angle - (3 * Math.PI) / 4)} l ${tipLength * Math.SQRT2 * Math.cos(angle - Math.PI / 4)},${tipLength * Math.SQRT2 * Math.sin(angle - Math.PI / 4)}`} />
   </>
 );
 
 const skip = (radius: number, strokeWidth: number) => (
   <>
-    <circle strokeWidth={strokeWidth} stroke="var(--color)" fill="none" cx="0" cy="0" r={radius} />
-    <line strokeWidth={strokeWidth} stroke="var(--color)" fill="none" x1={-radius * Math.cos(Math.PI / 4)} y1={radius * Math.sin(Math.PI / 4)} x2={radius * Math.cos(Math.PI / 4)} y2={-radius * Math.sin(Math.PI / 4)} />
+    <circle strokeWidth={strokeWidth} fill="none" cx="0" cy="0" r={radius} />
+    <line strokeWidth={strokeWidth} fill="none" x1={-radius * Math.cos(Math.PI / 4)} y1={radius * Math.sin(Math.PI / 4)} x2={radius * Math.cos(Math.PI / 4)} y2={-radius * Math.sin(Math.PI / 4)} />
   </>
 );
 
 const plusTwo = (height: number, width: number, radius: number, strokeWidth: number, strokeGap: number) => (
   <>
     <path strokeWidth={strokeWidth + strokeGap} stroke="var(--card-bg)" fill="none" d={`M ${-(6 / 7) * width},${-(1 / 7) * height} m ${radius},0 l ${width - 2 * radius},0 a ${radius},${radius} 0 0,1 ${radius},${radius} l 0,${height - 2 * radius} a ${radius},${radius} 0 0,1 ${-radius},${radius} l -${width - 2 * radius},0 a ${radius},${radius} 0 0,1 -${radius},-${radius} l 0,-${height - 2 * radius} a ${radius},${radius} 0 0,1 ${radius},-${radius} l ${width / 10},0`} />
-    <path strokeWidth={strokeWidth} stroke="var(--color)" fill="none" d={`M ${-(6 / 7) * width},${-(1 / 7) * height} m ${radius},0 l ${width - 2 * radius},0 a ${radius},${radius} 0 0,1 ${radius},${radius} l 0,${height - 2 * radius} a ${radius},${radius} 0 0,1 ${-radius},${radius} l -${width - 2 * radius},0 a ${radius},${radius} 0 0,1 -${radius},-${radius} l 0,-${height - 2 * radius} a ${radius},${radius} 0 0,1 ${radius},-${radius} l ${width / 10},0`} />
+    <path strokeWidth={strokeWidth} fill="none" d={`M ${-(6 / 7) * width},${-(1 / 7) * height} m ${radius},0 l ${width - 2 * radius},0 a ${radius},${radius} 0 0,1 ${radius},${radius} l 0,${height - 2 * radius} a ${radius},${radius} 0 0,1 ${-radius},${radius} l -${width - 2 * radius},0 a ${radius},${radius} 0 0,1 -${radius},-${radius} l 0,-${height - 2 * radius} a ${radius},${radius} 0 0,1 ${radius},-${radius} l ${width / 10},0`} />
     <path strokeWidth={strokeWidth + strokeGap} stroke="var(--card-bg)" fill="none" d={`M ${-(1 / 7) * width},${-(6 / 7) * height} m ${radius},0 l ${width - 2 * radius},0 a ${radius},${radius} 0 0,1 ${radius},${radius} l 0,${height - 2 * radius} a ${radius},${radius} 0 0,1 ${-radius},${radius} l -${width - 2 * radius},0 a ${radius},${radius} 0 0,1 -${radius},-${radius} l 0,-${height - 2 * radius} a ${radius},${radius} 0 0,1 ${radius},-${radius} l ${width / 10},0`} />
-    <path strokeWidth={strokeWidth} stroke="var(--color)" fill="none" d={`M ${-(1 / 7) * width},${-(6 / 7) * height} m ${radius},0 l ${width - 2 * radius},0 a ${radius},${radius} 0 0,1 ${radius},${radius} l 0,${height - 2 * radius} a ${radius},${radius} 0 0,1 ${-radius},${radius} l -${width - 2 * radius},0 a ${radius},${radius} 0 0,1 -${radius},-${radius} l 0,-${height - 2 * radius} a ${radius},${radius} 0 0,1 ${radius},-${radius} l ${width / 10},0`} />
+    <path strokeWidth={strokeWidth} fill="none" d={`M ${-(1 / 7) * width},${-(6 / 7) * height} m ${radius},0 l ${width - 2 * radius},0 a ${radius},${radius} 0 0,1 ${radius},${radius} l 0,${height - 2 * radius} a ${radius},${radius} 0 0,1 ${-radius},${radius} l -${width - 2 * radius},0 a ${radius},${radius} 0 0,1 -${radius},-${radius} l 0,-${height - 2 * radius} a ${radius},${radius} 0 0,1 ${radius},-${radius} l ${width / 10},0`} />
   </>
 );
 

@@ -53,7 +53,7 @@ export class Game {
           this.disconnect();
         }
       };
-      this.socket.onerror = () => void setError("SOCKET_ERROR");
+      this.socket.onerror = err => void console.log(err);
       this.socket.onclose = () => void setError("SOCKET_ERROR");
     });
   }
@@ -211,6 +211,12 @@ export class Game {
       if (!("cards" in data)) throw new Error("Missing key 'data.cards'");
 
       app.startMatch({ topCard: data.topCard, cards: data.cards });
+    });
+
+    this.eventHandlers.set("ADD_CARD_TO_HAND", data => {
+      if (!("card" in data)) throw new Error("Missing key 'data.card'");
+
+      app.state.currentMatch!.addCardToHand(data.card);
     });
   }
 }

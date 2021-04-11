@@ -81,6 +81,14 @@ declare namespace Protocol {
      * Promote to match master
      */
     event: "PROMOTE";
+  } | {
+    /**
+     * Add a card to the player
+     */
+    event: "ADD_CARD_TO_HAND";
+    data: {
+      card: number;
+    };
   };
 
   type ServerToClient = ({

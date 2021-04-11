@@ -32,6 +32,11 @@ export class Match {
     );
   }
 
+  public addCardToHand(card: number): void {
+    this.cards.push(card);
+    this.app.forceUpdate();
+  }
+
   public leave(): void {
     this.app.leave();
   }

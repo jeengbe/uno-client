@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 
 import "./App.scss";
+import { CardShowcase } from "./game/CardShowcase";
 import { Game } from "./game/Game";
 import { Match } from "./game/Match";
 import { MatchLobby } from "./game/MatchLobby";
@@ -32,6 +33,7 @@ export interface State {
 
 export default class App extends Component<Props, State> {
   private readonly game: Game;
+  private reconnectTimeout: number | null;
 
   constructor(props: Props) {
     super(props);
@@ -43,21 +45,32 @@ export default class App extends Component<Props, State> {
       currentMatch: null,
     };
 
-    this.game = new Game("game1", window.location.hash || "Jesper");
+    this.game = new Game("game1", window.location.hash);
+    this.reconnectTimeout = null;
   }
 
   async componentDidMount(): Promise<void> {
+    await this.connect();
+  }
+
+  /**
+   * Connect to the game socket
+   *
+   * @return When matches have loaded
+   */
+  private async connect(): Promise<void> {
     this.setState({
       state: "SOCKET_CONNECTING",
     });
 
     // Init connection
-    await this.game.connect(
-      err =>
-        void this.setState({
-          state: err,
-        })
-    );
+    await this.game.connect(err => {
+      console.log(err);
+      this.setState({
+        state: err,
+      });
+      // this.reconnectTimeout = window.setTimeout(() => void this.connect(), 1000);
+    });
 
     await this.game.welcome();
     this.setState({
@@ -76,7 +89,7 @@ export default class App extends Component<Props, State> {
       state: "SOCKET_SUCCESS",
     });
 
-    this.loadMatches();
+    await this.loadMatches();
   }
 
   private async loadMatches(): Promise<void> {
@@ -96,8 +109,8 @@ export default class App extends Component<Props, State> {
       });
     }
 
-    // // TODO: Remove
-    // this.joinMatch(1);
+    // TODO: Remove
+    this.joinMatch(1);
   }
 
   /**
@@ -117,6 +130,9 @@ export default class App extends Component<Props, State> {
     });
 
     this.game.readyForGame(this);
+
+    // TODO: Remove
+    this.game.startMatch();
   }
 
   /**
@@ -138,12 +154,29 @@ export default class App extends Component<Props, State> {
   }
 
   componentWillUnmount(): void {
+    if (this.reconnectTimeout !== null) {
+      window.clearTimeout(this.reconnectTimeout);
+    }
     this.game.disconnect();
   }
 
   render(): JSX.Element {
+    return (
+      <div className="cardShowcase">
+        <CardShowcase cards={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]} />
+        <CardShowcase cards={[16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]} />
+        <CardShowcase cards={[32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46]} />
+        <CardShowcase cards={[48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62]} />
+      </div>
+    );
+
     return {
-      SOCKET_ERROR: <h1 className="status error">Server error</h1>,
+      SOCKET_ERROR: (
+        <>
+          <h1 className="status error">Server error</h1>
+          <h2 className="status">Waiting to reconnect</h2>
+        </>
+      ),
       SOCKET_CONNECTING: <h1 className="status">Connecting</h1>,
       SOCKET_AUTH: <h1 className="status">Logging in</h1>,
       SOCKET_AUTH_ERROR: <h1 className="status error">Error logging in</h1>,

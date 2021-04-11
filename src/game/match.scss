@@ -1,0 +1,22 @@
+.table {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  .topCard {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .cardContainer {
+      height: 15rem;
+    }
+  }
+
+  .hand {
+    padding: 10px;
+    text-align: center;
+  }
+}

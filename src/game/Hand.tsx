@@ -1,8 +1,6 @@
 import { Component } from "react";
 import { Cards } from "./Cards";
 
-import "./Hand.scss";
-
 export interface Props {
   cards: number[];
 }

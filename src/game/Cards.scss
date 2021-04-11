@@ -9,12 +9,12 @@ $height: $width * (88.9 / 56);
 
   &.overlap {
     .cardContainer {
-      @for $i from 0 through 20 {
-        &:nth-child(#{$i + 1}) {
-          // transform: translateX($i * -50%);
-        }
-      }
-
+      // @for $i from 0 through 20 {
+      //   &:nth-child(#{$i + 1}) {
+      //     transform: translateX($i * -50%);
+      //   }
+      // }
+      margin: 0 5px;
 
       .card {
         transition: transform 0.1s linear;
@@ -33,7 +33,6 @@ $height: $width * (88.9 / 56);
   user-select: none;
   display: inline-block;
   cursor: pointer;
-  margin: 0 5px;
 
   .card {
     height: 100%;
@@ -42,8 +41,9 @@ $height: $width * (88.9 / 56);
 
     @each $color in "red", "green", "blue", "yellow" {
       &.#{$color} {
-        --card-bg: var(--#{$color});
         --color: var(--on-#{$color});
+        --card-bg: var(--#{$color});
+        --on-card-bg: var(--on-#{$color});
       }
     }
 
