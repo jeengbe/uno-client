@@ -9,7 +9,11 @@ export class Match {
   public topCard: number | null;
   public cards: number[];
 
-  public players: PlayerData[];
+  /**
+   * @key PlayerID
+   * @value Player data
+   */
+  public players: Record<number, PlayerData>;
 
   constructor(app: App, data: MatchDataMatch) {
     this.app = app;
@@ -32,8 +36,8 @@ export class Match {
     );
   }
 
-  public addCardToHand(card: number): void {
-    this.cards.push(card);
+  public addCardsToHand(cards: number[]): void {
+    this.cards.push(...cards);
     this.app.forceUpdate();
   }
 

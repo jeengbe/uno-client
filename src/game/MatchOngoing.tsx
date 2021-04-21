@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Card } from "./Card";
-import { Game } from "./Game";
+import { Game } from "./Player";
 import { Hand } from "./Hand";
 import { Match } from "./Match";
 

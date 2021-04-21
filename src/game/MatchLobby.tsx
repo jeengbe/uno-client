@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Game } from "./Game";
+import { Game } from "./Player";
 import { Match } from "./Match";
 
 export interface Props {

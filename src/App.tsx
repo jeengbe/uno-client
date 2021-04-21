@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 
 import "./App.scss";
-import { CardShowcase } from "./game/CardShowcase";
-import { Game } from "./game/Game";
+import { Game as Player } from "./game/Player";
 import { Match } from "./game/Match";
 import { MatchLobby } from "./game/MatchLobby";
 import { MatchOngoing } from "./game/MatchOngoing";
@@ -12,7 +11,7 @@ interface Props {}
 
 export interface State {
   state:
-    | "SOCKET_ERROR"
+    | "SOCKET_ERROR" // General error
     // Connection
     | "SOCKET_CONNECTING" // Establishing connection
     | "SOCKET_AUTH" // Waiting for authentication
@@ -32,8 +31,9 @@ export interface State {
 }
 
 export default class App extends Component<Props, State> {
-  private readonly game: Game;
+  private readonly player: Player;
   private reconnectTimeout: number | null;
+  private readonly timeToReconnect = 100000000000;
 
   constructor(props: Props) {
     super(props);
@@ -45,7 +45,7 @@ export default class App extends Component<Props, State> {
       currentMatch: null,
     };
 
-    this.game = new Game("game1", window.location.hash);
+    this.player = new Player(window.location.hash);
     this.reconnectTimeout = null;
   }
 
@@ -64,22 +64,22 @@ export default class App extends Component<Props, State> {
     });
 
     // Init connection
-    await this.game.connect(err => {
+    await this.player.connect(err => {
       console.log(err);
       this.setState({
         state: err,
       });
-      // this.reconnectTimeout = window.setTimeout(() => void this.connect(), 1000);
+      this.reconnectTimeout = window.setTimeout(() => void this.connect(), this.timeToReconnect);
     });
 
-    await this.game.welcome();
+    await this.player.awaitWelcome();
     this.setState({
       state: "SOCKET_AUTH",
     });
 
     // Login
     try {
-      await this.game.auth();
+      await this.player.doAuth();
     } catch (err) {
       return void this.setState({
         state: "SOCKET_AUTH_ERROR",
@@ -98,7 +98,7 @@ export default class App extends Component<Props, State> {
     });
     try {
       this.setState({
-        matches: await this.game.loadMatches(),
+        matches: await this.player.loadMatches(),
       });
       this.setState({
         state: "MATCHES_SELECT",
@@ -120,19 +120,19 @@ export default class App extends Component<Props, State> {
     this.setState({
       state: "MATCH_JOINING",
     });
-    await this.game.joinMatch(matchID);
+    await this.player.joinMatch(matchID);
     this.setState({
       state: "MATCH_LOADING",
     });
     this.setState({
       state: "MATCH_WAITING",
-      currentMatch: new Match(this, await this.game.loadCurrentMatchData()),
+      currentMatch: new Match(this, await this.player.loadCurrentMatchData()),
     });
 
-    this.game.readyForGame(this);
+    this.player.attachMatchHandlers(this);
 
     // TODO: Remove
-    this.game.startMatch();
+    this.player.startMatch();
   }
 
   /**
@@ -157,18 +157,18 @@ export default class App extends Component<Props, State> {
     if (this.reconnectTimeout !== null) {
       window.clearTimeout(this.reconnectTimeout);
     }
-    this.game.disconnect();
+    this.player.disconnect();
   }
 
   render(): JSX.Element {
-    return (
-      <div className="cardShowcase">
-        <CardShowcase cards={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]} />
-        <CardShowcase cards={[16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]} />
-        <CardShowcase cards={[32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46]} />
-        <CardShowcase cards={[48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62]} />
-      </div>
-    );
+    // return (
+    //   <div className="cardShowcase">
+    //     <CardShowcase cards={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]} />
+    //     <CardShowcase cards={[16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]} />
+    //     <CardShowcase cards={[32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46]} />
+    //     <CardShowcase cards={[48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62]} />
+    //   </div>
+    // );
 
     return {
       SOCKET_ERROR: (
@@ -185,8 +185,8 @@ export default class App extends Component<Props, State> {
       MATCHES_SELECT: <MatchSelection joinMatch={this.joinMatch.bind(this)} matches={this.state.matches} />,
       MATCH_JOINING: <h1 className="status">Joining match</h1>,
       MATCH_LOADING: <h1 className="status">Loading match data</h1>,
-      MATCH_WAITING: <MatchLobby game={this.game} match={this.state.currentMatch!} />,
-      MATCH_ONGOING: <MatchOngoing game={this.game} match={this.state.currentMatch!} />,
+      MATCH_WAITING: <MatchLobby game={this.player} match={this.state.currentMatch!} />,
+      MATCH_ONGOING: <MatchOngoing game={this.player} match={this.state.currentMatch!} />,
     }[this.state.state];
   }
 }

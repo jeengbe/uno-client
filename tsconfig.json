@@ -16,5 +16,5 @@
     "resolveJsonModule": true,
     "isolatedModules": true
   },
-  "include": ["src", "Uno.d.ts"]
+  "include": ["src", "../server/Uno.d.ts"]
 }
