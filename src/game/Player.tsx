@@ -1,5 +1,6 @@
-import App from "../App";
+import App, { GameState } from "../App";
 import { CONFIG } from "../Config";
+import { Match } from "./Match";
 
 type EventPacket = Protocol.ServerToClient & { method: "EVENT" };
 
@@ -12,8 +13,10 @@ interface EventHandlersMap {
   readonly size: number;
 }
 
-export class Game {
+export class Player {
   private readonly username: string;
+  public currentMatch: Match | null = null;
+  private readonly app: App;
   private socket: WebSocket | null = null;
 
   /**
@@ -27,14 +30,15 @@ export class Game {
    *
    * @param username Player's username
    */
-  constructor(username: string) {
+  constructor(app: App, username: string) {
+    this.app = app;
     this.username = username;
   }
 
   /**
    * Connect to the game socket and register the initial message handlers
    */
-  public connect(setError: (error: string) => void): Promise<void> {
+  public connect(setError: (error: GameState) => void): Promise<void> {
     return new Promise<void>(resolve => {
       this.socket = new WebSocket(CONFIG.SOCKET);
 
@@ -49,6 +53,7 @@ export class Game {
 
           try {
             if (this.messageHandler !== null) this.messageHandler(message);
+            this.messageHandler = null;
 
             if (method === "EVENT") {
               if (!("event" in message)) throw new Error("Missing key 'event'");
@@ -56,11 +61,7 @@ export class Game {
               const event = message.event;
 
               if (this.eventHandlers.has(event)) {
-                if ("data" in message) {
-                  this.eventHandlers.get(event)!(message.data);
-                } else {
-                  this.eventHandlers.get(event)!({});
-                }
+                this.eventHandlers.get(event)!(message);
               }
             }
           } catch (err) {
@@ -74,6 +75,7 @@ export class Game {
         }
       };
       this.socket.onerror = err => void console.log(err);
+      // Must have extra function for this so that we can call this, even when outside of the actual try-catch block
       this.socket.onclose = () => void setError("SOCKET_ERROR");
     });
   }
@@ -104,7 +106,6 @@ export class Game {
     return new Promise<void>(resolve => {
       this.messageHandler = async message => {
         if (message.method !== "WELCOME") throw new Error("Awaiting welcome");
-        await this.doAuth();
 
         resolve();
       };
@@ -123,7 +124,6 @@ export class Game {
 
       this.messageHandler = message => {
         if (message.method !== "AUTH") throw new Error("Awaiting authentication");
-
         resolve();
       };
     });
@@ -166,6 +166,7 @@ export class Game {
       this.messageHandler = message => {
         if (message.method !== "JOIN_MATCH") throw new Error("Wrong method");
 
+        this.currentMatch = new Match(this.app, matchID);
         resolve();
       };
     });
@@ -187,6 +188,8 @@ export class Game {
       this.messageHandler = message => {
         if (message.method !== "LOAD_MATCH_DATA") throw new Error("Wrong method");
         const data = message.data;
+
+        this.currentMatch!.setData(data.match);
 
         resolve(data.match);
       };
@@ -215,19 +218,20 @@ export class Game {
    */
   public attachMatchHandlers(): void {
     this.eventHandlers.set("PROMOTE", () => {
-      this.currentMatch!.setIsMaster(true);
+      this.currentMatch!.isMaster = true;
     });
 
     this.eventHandlers.set("ADD_PLAYER", ({ data }) => {
-      this.currentMatch!.addPlayer(data.player);
+      this.currentMatch!.addPlayer(data.playerNumber, data.player);
     });
 
     this.eventHandlers.set("REMOVE_PLAYER", ({ data }) => {
-      this.currentMatch!.removePlayer(data.playerID);
+      this.currentMatch!.removePlayer(data.playerNumber);
     });
 
     this.eventHandlers.set("START_MATCH", ({ data }) => {
-      this.currentMatch!.start({ topCard: data.topCard, cards: data.cards });
+      this.currentMatch!.start(data.topCard, data.cards);
+      this.app.startMatch();
     });
 
     this.eventHandlers.set("ADD_CARDS_TO_HAND", ({ data }) => {

@@ -1,39 +1,39 @@
-import React, { Component } from "react";
+import { Component } from "react";
 
 import "./App.scss";
-import { Game as Player } from "./game/Player";
-import { Match } from "./game/Match";
+
+import { Player } from "./game/Player";
 import { MatchLobby } from "./game/MatchLobby";
-import { MatchOngoing } from "./game/MatchOngoing";
+import { Table } from "./game/Table";
 import { MatchSelection } from "./game/MatchSelection";
+
+export type GameState =
+  | "SOCKET_ERROR" // General error
+  // Connection
+  | "SOCKET_CONNECTING" // Establishing connection
+  | "SOCKET_AUTH" // Waiting for authentication
+  | "SOCKET_AUTH_ERROR" // Authentication error
+  | "SOCKET_SUCCESS" // Connection successfull
+  // Match selection
+  | "MATCHES_LOADING" // Loading matches
+  | "MATCHES_SELECT" // Awaiting match selection
+  // Actual game
+  | "MATCH_JOINING" // Joining a match
+  | "MATCH_LOADING" // Loading match data after join
+  | "MATCH_WAITING" // Waiting for the match to start
+  | "MATCH_ONGOING"; // Currently in a match
 
 interface Props {}
 
-export interface State {
-  state:
-    | "SOCKET_ERROR" // General error
-    // Connection
-    | "SOCKET_CONNECTING" // Establishing connection
-    | "SOCKET_AUTH" // Waiting for authentication
-    | "SOCKET_AUTH_ERROR" // Authentication error
-    | "SOCKET_SUCCESS" // Connection successfull
-    // Match selection
-    | "MATCHES_LOADING" // Loading matches
-    | "MATCHES_SELECT" // Awaiting match selection
-    // Actual game
-    | "MATCH_JOINING" // Joining a match
-    | "MATCH_LOADING" // Loading match data after join
-    | "MATCH_WAITING" // Waiting for the match to start
-    | "MATCH_ONGOING"; // Currently in a match
-
+interface State {
+  state: GameState;
   matches: MatchDataPublic[];
-  currentMatch: Match | null;
 }
 
 export default class App extends Component<Props, State> {
   private readonly player: Player;
   private reconnectTimeout: number | null;
-  private readonly timeToReconnect = 100000000000;
+  private readonly timeToReconnect = -1;
 
   constructor(props: Props) {
     super(props);
@@ -42,10 +42,9 @@ export default class App extends Component<Props, State> {
     this.state = {
       state: "SOCKET_CONNECTING",
       matches: [],
-      currentMatch: null,
     };
 
-    this.player = new Player(window.location.hash);
+    this.player = new Player(this, window.location.hash);
     this.reconnectTimeout = null;
   }
 
@@ -65,11 +64,13 @@ export default class App extends Component<Props, State> {
 
     // Init connection
     await this.player.connect(err => {
-      console.log(err);
       this.setState({
         state: err,
       });
-      this.reconnectTimeout = window.setTimeout(() => void this.connect(), this.timeToReconnect);
+      if (this.timeToReconnect > 0) {
+        this.reconnectTimeout = window.setTimeout(() => void this.connect(), this.timeToReconnect);
+      }
+      return;
     });
 
     await this.player.awaitWelcome();
@@ -99,8 +100,6 @@ export default class App extends Component<Props, State> {
     try {
       this.setState({
         matches: await this.player.loadMatches(),
-      });
-      this.setState({
         state: "MATCHES_SELECT",
       });
     } catch (err) {
@@ -124,26 +123,21 @@ export default class App extends Component<Props, State> {
     this.setState({
       state: "MATCH_LOADING",
     });
+    await this.player.loadCurrentMatchData();
     this.setState({
       state: "MATCH_WAITING",
-      currentMatch: new Match(this, await this.player.loadCurrentMatchData()),
     });
 
-    this.player.attachMatchHandlers(this);
+    this.player.attachMatchHandlers();
 
-    // TODO: Remove
-    this.player.startMatch();
+    // // TODO: Remove
+    // this.player.startMatch();
   }
 
   /**
    * Start the current match
    */
-  public startMatch(data: { topCard: number; cards: number[] }): void {
-    const { topCard, cards } = data;
-
-    this.state.currentMatch!.topCard = topCard;
-    this.state.currentMatch!.cards = cards;
-
+  public startMatch(): void {
     this.setState({
       state: "MATCH_ONGOING",
     });
@@ -185,8 +179,8 @@ export default class App extends Component<Props, State> {
       MATCHES_SELECT: <MatchSelection joinMatch={this.joinMatch.bind(this)} matches={this.state.matches} />,
       MATCH_JOINING: <h1 className="status">Joining match</h1>,
       MATCH_LOADING: <h1 className="status">Loading match data</h1>,
-      MATCH_WAITING: <MatchLobby game={this.player} match={this.state.currentMatch!} />,
-      MATCH_ONGOING: <MatchOngoing game={this.player} match={this.state.currentMatch!} />,
+      MATCH_WAITING: <MatchLobby player={this.player} />,
+      MATCH_ONGOING: <Table player={this.player} />,
     }[this.state.state];
   }
 }

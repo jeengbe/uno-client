@@ -1,23 +1,23 @@
 import React, { Component } from "react";
-import { Game } from "./Player";
-import { Match } from "./Match";
+import { Player } from "./Player";
 
 export interface Props {
-  game: Game;
-  match: Match;
+  player: Player;
 }
 
 export interface State {}
 
 export class MatchLobby extends Component<Props, State> {
   render(): JSX.Element {
+    const match = this.props.player.currentMatch!;
+
     return (
       <>
-        <h1 className="status">Waiting for match to start: {this.props.match.name}</h1>
-        {this.props.match.isMaster && <button onClick={() => this.props.game.startMatch()}>Start match</button>}
-        <button onClick={() => this.props.match.leave()}>Disconnect</button>
+        <h1 className="status">Waiting for match to start: {match.name}</h1>
+        {match.isMaster && <button onClick={() => this.props.player.startMatch()}>Start match</button>}
+        <button onClick={() => match.leave()}>Disconnect</button>
         <div className="playerList">
-          {this.props.match.players.map(player => (
+          {Array.from(match.players).map(([_nr, player]) => (
             <div key={player.ID} className="player">
               {player.username}
             </div>
