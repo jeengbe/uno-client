@@ -9,6 +9,7 @@ export interface Props {
   height: string;
   inline?: boolean;
   overlap?: boolean;
+  onCardClick?: (cardIndex: number) => void;
 }
 
 export interface State {}
@@ -18,7 +19,7 @@ export class Cards extends Component<Props, State> {
     return (
       <div style={{ height: this.props.height }} className={classNames({ cards: true, overlap: this.props.overlap !== false })}>
         {this.props.cards.map((card, i) => (
-          <Card key={i} card={card} inline={this.props.inline} />
+          <Card onClick={() => this.props.onCardClick && this.props.onCardClick(i)} key={i} card={card} inline={this.props.inline} />
         ))}
       </div>
     );

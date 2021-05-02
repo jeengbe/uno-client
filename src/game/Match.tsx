@@ -20,9 +20,14 @@ export class Match {
   public topCard: number | null = null;
 
   /**
-   * Player who is in control of the game (May start, pause, etc.)
+   * Whether the player is the game master
    */
   public isMaster: boolean | null = null;
+
+  /**
+   * Whether it is the player's turn
+   */
+  public isOwnTurn = false;
 
   /**
    * Index of `Match.players` of the player whose turn it is
@@ -38,6 +43,11 @@ export class Match {
    * The player's cards
    */
   public hand: number[] = [];
+
+  /**
+   * The indices (of `Match.hand`) of the cards the player will play
+   */
+  public cardsToPlay: number[] = [];
 
   constructor(app: App, ID: number) {
     this.app = app;
@@ -71,6 +81,49 @@ export class Match {
     this.topCard = topCard;
     this.hand = hand;
     this.app.forceUpdate();
+  }
+
+  public setTopCard(topCard: number): void {
+    this.topCard = topCard;
+    this.app.forceUpdate();
+  }
+
+  /**
+   * @param index Index of the card to play
+   */
+  public unplayCard(index: number): void {
+    this.cardsToPlay.splice(index, 1);
+
+    this.app.forceUpdate();
+  }
+
+  /**
+   * @param index Index of the card to play
+   */
+  public preparePlay(index: number): void {
+    this.cardsToPlay.push(index);
+    this.app.forceUpdate();
+  }
+
+  public async playCards(): Promise<void> {
+    if (await this.app.player.playCards(this.cardsToPlay)) {
+      for (const index of this.cardsToPlay.sort((a, b) => b - a)) {
+        this.hand.splice(index, 1);
+      }
+      this.cardsToPlay = [];
+      this.app.forceUpdate();
+    } else {
+      console.log("Invalid Play");
+    }
+  }
+
+  public setIsOwnTurn(isOwnTurn: boolean): void {
+    this.isOwnTurn = isOwnTurn;
+    this.app.forceUpdate();
+  }
+
+  public takeCard(): void {
+    this.app.player.takeCard();
   }
 
   public leave(): void {

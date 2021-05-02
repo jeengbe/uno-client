@@ -21,6 +21,7 @@ export interface Props {
    */
   card: number;
   inline?: boolean;
+  onClick?: () => void;
 }
 
 export interface State {
@@ -65,11 +66,7 @@ export class Card extends Component<Props, State> {
     return (
       <div
         className="cardContainer"
-        onClick={() => {
-          this.setState(state => ({
-            flipped: !state.flipped,
-          }));
-        }}
+        onClick={() => this.props.onClick && this.props.onClick()}
       >
         <svg
           className={classNames({

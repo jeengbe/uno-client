@@ -14,6 +14,10 @@ export interface State {}
 export class Table extends Component<Props, State> {
   render(): JSX.Element {
     const match = this.props.player.currentMatch!;
+    const handCards = [...match.hand];
+    for (const index of match.cardsToPlay) {
+      delete handCards[index];
+    }
 
     return (
       <>
@@ -22,7 +26,11 @@ export class Table extends Component<Props, State> {
           <div className="topCard">
             <Card card={match.topCard!} />
           </div>
-          <Hand cards={match.hand} />
+          <Hand height="5rem" cards={match.cardsToPlay.map(index => match.hand[index])} onCardClick={index => match.unplayCard(index)} />
+          {match.cardsToPlay.length > 0 && <button onClick={() => match.playCards()}>Play</button>}
+          {match.isOwnTurn && <h3>Your turn!</h3>}
+          {match.isOwnTurn && <button onClick={() => match.takeCard()}>Take Card</button>}
+          <Hand height="15rem" cards={handCards} onCardClick={index => match.preparePlay(index)} />
         </div>
       </>
     );

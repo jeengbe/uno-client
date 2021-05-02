@@ -31,7 +31,7 @@ interface State {
 }
 
 export default class App extends Component<Props, State> {
-  private readonly player: Player;
+  public readonly player: Player;
   private reconnectTimeout: number | null;
   private readonly timeToReconnect = -1;
 
@@ -176,7 +176,7 @@ export default class App extends Component<Props, State> {
       SOCKET_AUTH_ERROR: <h1 className="status error">Error logging in</h1>,
       SOCKET_SUCCESS: <h1 className="status">Successfully connected</h1>,
       MATCHES_LOADING: <h1 className="status">Loading matches</h1>,
-      MATCHES_SELECT: <MatchSelection joinMatch={this.joinMatch.bind(this)} matches={this.state.matches} />,
+      MATCHES_SELECT: <MatchSelection joinMatch={matchID => this.joinMatch(matchID)} matches={this.state.matches} />,
       MATCH_JOINING: <h1 className="status">Joining match</h1>,
       MATCH_LOADING: <h1 className="status">Loading match data</h1>,
       MATCH_WAITING: <MatchLobby player={this.player} />,

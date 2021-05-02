@@ -14,6 +14,7 @@ interface EventHandlersMap {
 }
 
 export class Player {
+  public turnNumber: number | null = null;
   private readonly username: string;
   public currentMatch: Match | null = null;
   private readonly app: App;
@@ -52,9 +53,6 @@ export class Player {
           const method = message.method;
 
           try {
-            if (this.messageHandler !== null) this.messageHandler(message);
-            this.messageHandler = null;
-
             if (method === "EVENT") {
               if (!("event" in message)) throw new Error("Missing key 'event'");
               if (typeof message.event !== "string") throw new Error("Invalid 'event' type");
@@ -63,6 +61,9 @@ export class Player {
               if (this.eventHandlers.has(event)) {
                 this.eventHandlers.get(event)!(message);
               }
+            } else {
+              if (this.messageHandler !== null) this.messageHandler(message);
+              this.messageHandler = null;
             }
           } catch (err) {
             // Runtime error handling message
@@ -144,7 +145,7 @@ export class Player {
 
       this.messageHandler = message => {
         if (message.method !== "LIST_MATCHES") throw new Error("Wrong method");
-        const data = message.data;
+        const { data } = message;
 
         resolve(data.matches);
       };
@@ -165,6 +166,7 @@ export class Player {
 
       this.messageHandler = message => {
         if (message.method !== "JOIN_MATCH") throw new Error("Wrong method");
+        this.turnNumber = message.data.turnNumber;
 
         this.currentMatch = new Match(this.app, matchID);
         resolve();
@@ -187,7 +189,7 @@ export class Player {
 
       this.messageHandler = message => {
         if (message.method !== "LOAD_MATCH_DATA") throw new Error("Wrong method");
-        const data = message.data;
+        const { data } = message;
 
         this.currentMatch!.setData(data.match);
 
@@ -237,6 +239,14 @@ export class Player {
     this.eventHandlers.set("ADD_CARDS_TO_HAND", ({ data }) => {
       this.currentMatch!.addCardsToHand(data.cards);
     });
+
+    this.eventHandlers.set("PUSH_STACK", ({ data }) => {
+      this.currentMatch!.setTopCard(data.cards[data.cards.length - 1]);
+    });
+
+    this.eventHandlers.set("SET_TURN", ({ data }) => {
+      this.currentMatch!.setIsOwnTurn(data.turn === this.turnNumber);
+    });
   }
 
   /**
@@ -248,5 +258,36 @@ export class Player {
     this.eventHandlers.delete("REMOVE_PLAYER");
     this.eventHandlers.delete("START_MATCH");
     this.eventHandlers.delete("ADD_CARDS_TO_HAND");
+  }
+
+  public playCards(cardIndices: number[]): Promise<boolean> {
+    return new Promise<boolean>(resolve => {
+      this.send({
+        method: "PLAY_CARDS",
+        data: {
+          cards: cardIndices,
+        },
+      });
+
+      this.messageHandler = message => {
+        if (message.method !== "PLAY_CARDS") throw new Error("Wrong method");
+        const { data } = message;
+
+        resolve(data.valid);
+      };
+    });
+  }
+
+  public takeCard(): Promise<void> {
+    return new Promise<void>(resolve => {
+      this.send({
+        method: "TAKE_CARD",
+      });
+
+      this.messageHandler = message => {
+        if (message.method !== "TAKE_CARD") throw new Error("Wrong method");
+        resolve();
+      };
+    });
   }
 }
