@@ -24,10 +24,11 @@ export class Table extends Component<Props, State> {
         <div className="table">
           <h1 className="status">{match.name}</h1>
           <div className="topCard">
-            <Card card={match.topCard!} />
+            <Card card={match.getTopCard()} />
           </div>
           <Hand height="5rem" cards={match.cardsToPlay.map(index => match.hand[index])} onCardClick={index => match.unplayCard(index)} />
           {match.cardsToPlay.length > 0 && <button onClick={() => match.playCards()}>Play</button>}
+          <h3>Draw Streak: {match.drawStreak}</h3>
           {match.isOwnTurn && <h3>Your turn!</h3>}
           {match.isOwnTurn && <button onClick={() => match.takeCard()}>Take Card</button>}
           <Hand height="15rem" cards={handCards} onCardClick={index => match.preparePlay(index)} />

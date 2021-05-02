@@ -14,7 +14,7 @@ interface EventHandlersMap {
 }
 
 export class Player {
-  public turnNumber: number | null = null;
+  public playerNumber: number | null = null;
   private readonly username: string;
   public currentMatch: Match | null = null;
   private readonly app: App;
@@ -166,7 +166,7 @@ export class Player {
 
       this.messageHandler = message => {
         if (message.method !== "JOIN_MATCH") throw new Error("Wrong method");
-        this.turnNumber = message.data.turnNumber;
+        this.playerNumber = message.data.turnNumber;
 
         this.currentMatch = new Match(this.app, matchID);
         resolve();
@@ -232,7 +232,7 @@ export class Player {
     });
 
     this.eventHandlers.set("START_MATCH", ({ data }) => {
-      this.currentMatch!.start(data.topCard, data.cards);
+      this.currentMatch!.start(data.stack, data.cards);
       this.app.startMatch();
     });
 
@@ -241,11 +241,12 @@ export class Player {
     });
 
     this.eventHandlers.set("PUSH_STACK", ({ data }) => {
-      this.currentMatch!.setTopCard(data.cards[data.cards.length - 1]);
+      this.currentMatch!.pushToStack(data.cards);
     });
 
     this.eventHandlers.set("SET_TURN", ({ data }) => {
-      this.currentMatch!.setIsOwnTurn(data.turn === this.turnNumber);
+      this.currentMatch!.setTurn(data.turn);
+      this.currentMatch!.setDrawStreak(data.drawStreak);
     });
   }
 

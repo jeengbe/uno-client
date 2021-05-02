@@ -15,11 +15,6 @@ export class Match {
   public players: Map<number, PlayerData> = new Map();
 
   /**
-   * Top card on the draw stack
-   */
-  public topCard: number | null = null;
-
-  /**
    * Whether the player is the game master
    */
   public isMaster: boolean | null = null;
@@ -30,6 +25,11 @@ export class Match {
   public isOwnTurn = false;
 
   /**
+   * Cards that lay on the table
+   */
+  public stack: number[] = [];
+
+  /**
    * Index of `Match.players` of the player whose turn it is
    */
   private turn = 0;
@@ -37,7 +37,7 @@ export class Match {
   /**
    * The current draw streak
    */
-  private drawStreak = 0;
+  public drawStreak = 0;
 
   /**
    * The player's cards
@@ -77,15 +77,24 @@ export class Match {
     this.app.forceUpdate();
   }
 
-  public start(topCard: number, hand: number[]): void {
-    this.topCard = topCard;
+  public start(startingCard: number[], hand: number[]): void {
+    this.stack = startingCard;
     this.hand = hand;
     this.app.forceUpdate();
   }
 
-  public setTopCard(topCard: number): void {
-    this.topCard = topCard;
+  public pushToStack(cards: number[]): void {
+    this.stack.push(...cards);
     this.app.forceUpdate();
+  }
+
+  public setDrawStreak(drawStreak: number): void {
+    this.drawStreak = drawStreak;
+    this.app.forceUpdate();
+  }
+
+  public getTopCard(): number {
+    return this.stack[this.stack.length - 1]!;
   }
 
   /**
@@ -117,8 +126,9 @@ export class Match {
     }
   }
 
-  public setIsOwnTurn(isOwnTurn: boolean): void {
-    this.isOwnTurn = isOwnTurn;
+  public setTurn(turn: number): void {
+    this.isOwnTurn = this.app.player.playerNumber === turn;
+    this.turn = turn;
     this.app.forceUpdate();
   }
 
