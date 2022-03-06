@@ -287,8 +287,19 @@ export class Player {
 
       this.messageHandler = message => {
         if (message.method !== "TAKE_CARD") throw new Error("Wrong method");
+
         resolve();
       };
+    });
+  }
+
+  public skip(): Promise<void> {
+    return new Promise<void>(resolve => {
+      this.send({
+        method: "SKIP",
+      });
+
+      resolve();
     });
   }
 }

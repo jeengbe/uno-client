@@ -49,6 +49,11 @@ export class Match {
    */
   public cardsToPlay: number[] = [];
 
+  /**
+   * Whether the player has taken a card already
+   */
+  public hasTakenCardAlready = false;
+
   constructor(app: App, ID: number) {
     this.app = app;
     this.ID = ID;
@@ -129,11 +134,17 @@ export class Match {
   public setTurn(turn: number): void {
     this.isOwnTurn = this.app.player.playerNumber === turn;
     this.turn = turn;
+    this.hasTakenCardAlready = false;
     this.app.forceUpdate();
   }
 
   public takeCard(): void {
+    this.hasTakenCardAlready = true;
     this.app.player.takeCard();
+  }
+
+  public skip(): void {
+    this.app.player.skip();
   }
 
   public leave(): void {
